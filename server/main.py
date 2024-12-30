@@ -1,0 +1,24 @@
+from fastapi import FastAPI, Request
+import pickle
+import numpy as np
+
+app = FastAPI()
+
+with open("model.pkl", "rb") as model_file:
+    model = pickle.load(model_file)
+
+@app.post("/predict_bulb_state_using_luminosity")
+async def predict_bulb_state(request: Request):
+    data = await request.json()
+    print(data)
+    
+
+    if 'luminosity' not in data:
+        return {"error": "Luminosity value is required."}
+    
+    luminosity_value = np.array([[data['luminosity']]])
+    prediction = model.predict(luminosity_value) 
+    
+    # Return the prediction as a JSON response (assuming 0 = off, 1 = on)
+    return {"bulb_state": int(prediction[0])} 
+
