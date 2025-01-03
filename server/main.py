@@ -7,6 +7,11 @@ app = FastAPI()
 with open("model.pkl", "rb") as model_file:
     model = pickle.load(model_file)
 
+
+@app.get("/")
+async def predict_bulb_state():
+    return {"status": "Running"} 
+    
 @app.post("/predict_bulb_state_using_luminosity")
 async def predict_bulb_state(request: Request):
     data = await request.json()
