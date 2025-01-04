@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 import pickle
 import numpy as np
+import uvicorn
 
 app = FastAPI()
 
@@ -26,4 +27,8 @@ async def predict_bulb_state(request: Request):
     
     # Return the prediction as a JSON response (assuming 0 = off, 1 = on)
     return {"bulb_state": int(prediction[0])} 
+
+
+if __name__ == "__main__": 
+    uvicorn.run(app, host="0.0.0.0", port=4000, reload=True)
 
