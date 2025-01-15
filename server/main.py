@@ -5,8 +5,11 @@ import uvicorn
 
 app = FastAPI()
 
-with open("model.pkl", "rb") as model_file:
-    model = pickle.load(model_file)
+with open("model_light_status.pkl", "rb") as model_file:
+    model_light_status = pickle.load(model_file)
+    
+with open("model_fan_range.pkl", "rb") as model_file:
+    model_fan_range = pickle.load(model_file)
 
 
 @app.get("/")
@@ -23,10 +26,25 @@ async def predict_bulb_state(request: Request):
         return {"error": "Luminosity value is required."}
     
     luminosity_value = np.array([[data['luminosity']]])
-    prediction = model.predict(luminosity_value) 
+    prediction = model_light_status.predict(luminosity_value) 
     
     # Return the prediction as a JSON response (assuming 0 = off, 1 = on)
     return {"bulb_state": int(prediction[0])} 
+
+
+@app.post("/predict_fan_range_using_temperature")
+async def predict_fan_range_using_temperature(request: Request):
+    data = await request.json()
+    print(data)
+    
+
+    if 'temperature' not in data:
+        return {"error": "Temperature value is required."}
+    
+    temperature_value = np.array([[data['temperature']]])
+    prediction = model_fan_range.predict(temperature_value) 
+    
+    return {"fan_range": int(prediction[0])} 
 
 
 if __name__ == "__main__": 
