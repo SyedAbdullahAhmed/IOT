@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 import pickle
 import numpy as np
 import uvicorn
+from mail import sendMail
 
 app = FastAPI()
 
@@ -40,6 +41,9 @@ async def predict_fan_range_using_temperature(request: Request):
 
     if 'temperature' not in data:
         return {"error": "Temperature value is required."}
+
+    if data['temperature'] > 30:
+        sendMail()
     
     temperature_value = np.array([[data['temperature']]])
     prediction = model_fan_range.predict(temperature_value) 
